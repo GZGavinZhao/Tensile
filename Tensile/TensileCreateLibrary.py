@@ -43,6 +43,7 @@ from .SolutionWriter import SolutionWriter
 
 import argparse
 import collections
+import filecmp
 import itertools
 import os
 import re
@@ -789,8 +790,11 @@ def copyStaticFiles(outputPath=None):
 
   for fileName in libraryStaticFiles:
     # copy file
-    shutil.copy( os.path.join(globalParameters["SourcePath"], fileName), \
-        outputPath )
+    src = os.path.join(globalParameters["SourcePath"], fileName)
+    dst = os.path.join(outputPath, os.path.basename(src))
+    # no need to copy twice if it has already been copied
+    if not os.path.isfile(dst) or not filecmp.cmp(src, dst):
+        shutil.copyfile(src, dst)
 
   return libraryStaticFiles
 
